@@ -1,0 +1,17 @@
+Parse the metafile
+Metafile metafile = new Metafile(new BufferedInputStream(new FileInputStream(filename)));
+Create the torrent disk, this is the destination where the torrent file/s will be saved
+TorrentDisk tdisk = new PlainFileSystemTorrentDisk(metafile, new File("."));
+tdisk.init();
+IncomingPeerListener peerListener = new IncomingPeerListener(PORT);
+peerListener.start();
+Torrent torrent = new Torrent(metafile, tdisk, peerListener);
+torrent.startDownload();
+while (!torrent.isCompleted()) {
+    try {
+        Thread.sleep(1000);
+    } catch(InterruptedException ie) {
+        break;
+    }
+    torrent.tick();
+}
